@@ -18,3 +18,5 @@ EXPOSE 3000
 
 # Run the application
 CMD ["node", "index.js"]
+
+RUN mkdir -p /.npm && chown -R 133:139 /.npm
