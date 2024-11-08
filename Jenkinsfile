@@ -1,22 +1,20 @@
 pipeline {
     agent any
     environment {
-        DOCKER_IMAGE = 'my-node-api'  // Set your image name here
-        DOCKER_CREDENTIALS = 'my-docker-registry'  // Replace with your actual Docker credentials ID
+        DOCKER_IMAGE = 'my-node-api'
     }
     stages {
         stage('Checkout') {
             steps {
-                // Checkout the code from the Git repository
                 checkout scm
             }
         }
         stage('Login to Docker Hub') {
             steps {
                 script {
-                    // Login to Docker registry using the credentials stored in Jenkins
-                    docker.withRegistry('https://index.docker.io', DOCKER_CREDENTIALS) {
-                        docker run 'Logged in to Docker Hub'
+                    withCredentials([usernamePassword(credentialsId: 'my-docker-resgitry', passwordVariable: 'Vini_2406', usernameVariable: 'ruparani24')]) {
+                        // Login to Docker registry using explicit credentials
+                        sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} https://index.docker.io"
                     }
                 }
             }
@@ -24,7 +22,6 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build the Docker image
                     docker.build(DOCKER_IMAGE)
                 }
             }
@@ -32,9 +29,8 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    // Run tests inside the Docker container with fixed permissions
                     docker.image(DOCKER_IMAGE).inside {
-                        sh 'npm config set unsafe-perm true'  // Set unsafe-perm to true to avoid permissions issues
+                        sh 'npm config set unsafe-perm true'
                         sh 'npm install'
                         sh 'npm test'
                     }
@@ -44,7 +40,6 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    // Push the Docker image to the Docker Hub registry
                     docker.withRegistry('https://index.docker.io', DOCKER_CREDENTIALS) {
                         docker.image(DOCKER_IMAGE).push('latest')
                     }
@@ -54,19 +49,18 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Deploy the Docker container (example: to a staging environment)
                     docker.run 'Deploying Docker container...'
-                    // Deployment commands here (Docker, Kubernetes, etc.)
+                    // Deployment commands here
                 }
             }
         }
     }
     post {
         success {
-            docker.run 'Pipeline succeeded!'
+            echo 'Pipeline succeeded!'
         }
         failure {
-            docker.run 'Pipeline failed!'
+            echo 'Pipeline failed!'
         }
     }
 }
