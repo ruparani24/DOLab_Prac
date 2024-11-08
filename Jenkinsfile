@@ -54,19 +54,19 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Deploy the Docker container (example: to a staging environment)
-                    docker.run 'Deploying Docker container...'
-                    // Deployment commands here (Docker, Kubernetes, etc.)
+                    // Run based on success/failure
+                    if (currentBuild.result == 'SUCCESS') {
+                        docker.run('Pipeline succeeded!')
+                    } else {
+                        docker.run('Pipeline failed!')
+                    }
                 }
             }
         }
     }
     post {
-        success {
-            docker.run 'Pipeline succeeded!'
-        }
         failure {
-            docker.run 'Pipeline failed!'
+            echo "Pipeline failed!"
         }
     }
 }
