@@ -2,7 +2,7 @@ pipeline {
     agent any
     environment {
         DOCKER_IMAGE = 'my-node-api'  // Set your image name here
-        DOCKER_CREDENTIALS = 'my-docker-registry'  // Replace with your actual Docker credentials ID
+        DOCKER_CREDENTIALS = 'my-docker-resgitry'  // Replace with your actual Docker credentials ID
     }
     stages {
         stage('Checkout') {
