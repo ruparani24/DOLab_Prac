@@ -16,7 +16,7 @@ pipeline {
                 script {
                     // Login to Docker registry using the credentials stored in Jenkins
                     docker.withRegistry('https://index.docker.io', DOCKER_CREDENTIALS) {
-                        echo 'Logged in to Docker Hub'
+                        docker run 'Logged in to Docker Hub'
                     }
                 }
             }
@@ -25,7 +25,7 @@ pipeline {
             steps {
                 script {
                     // Build the Docker image
-                    docker.build(DOCKER_IMAGE, '--no-cache') // Optionally add --no-cache for fresh build
+                    docker.build(DOCKER_IMAGE)
                 }
             }
         }
@@ -55,24 +55,18 @@ pipeline {
             steps {
                 script {
                     // Deploy the Docker container (example: to a staging environment)
-                    echo 'Deploying Docker container...'
+                    docker.run 'Deploying Docker container...'
                     // Deployment commands here (Docker, Kubernetes, etc.)
-                    // Example:
-                    // sh 'docker run -d --name my-container $DOCKER_IMAGE'
                 }
             }
         }
     }
     post {
         success {
-            script {
-                echo 'Pipeline succeeded!'
-            }
+            docker.run 'Pipeline succeeded!'
         }
         failure {
-            script {
-                echo 'Pipeline failed!'
-            }
+            docker.run 'Pipeline failed!'
         }
     }
 }
